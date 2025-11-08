@@ -494,6 +494,273 @@ void RestaurantGUI::OnCheckout() {
     }
 }
 
+// Create modern layout for POS interface
+void RestaurantGUI::CreateModernLayout(HWND hwnd) {
+    // Clear any existing menu buttons
+    for (HWND btn : menuButtonHandles) {
+        if (btn) DestroyWindow(btn);
+    }
+    menuButtonHandles.clear();
+
+    // Clear any existing keypad buttons
+    for (HWND btn : keypadHandles) {
+        if (btn) DestroyWindow(btn);
+    }
+    keypadHandles.clear();
+
+    // Create category tabs (modern styling)
+    hwndTabAppetizers = CreateWindow(L"BUTTON", L"APPETIZERS",
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+        20, 120, 150, 40, hwnd, (HMENU)IDC_TAB_APPETIZERS, NULL, NULL);
+
+    hwndTabMain = CreateWindow(L"BUTTON", L"MAIN DISHES",
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+        180, 120, 150, 40, hwnd, (HMENU)IDC_TAB_MAIN, NULL, NULL);
+
+    hwndTabDesserts = CreateWindow(L"BUTTON", L"DESSERTS",
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+        340, 120, 150, 40, hwnd, (HMENU)IDC_TAB_DESSERTS, NULL, NULL);
+
+    hwndTabBeverages = CreateWindow(L"BUTTON", L"BEVERAGES",
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+        500, 120, 150, 40, hwnd, (HMENU)IDC_TAB_BEVERAGES, NULL, NULL);
+
+    // Apply fonts to category tabs
+    SendMessage(hwndTabAppetizers, WM_SETFONT, (WPARAM)hFontNormal, TRUE);
+    SendMessage(hwndTabMain, WM_SETFONT, (WPARAM)hFontNormal, TRUE);
+    SendMessage(hwndTabDesserts, WM_SETFONT, (WPARAM)hFontNormal, TRUE);
+    SendMessage(hwndTabBeverages, WM_SETFONT, (WPARAM)hFontNormal, TRUE);
+
+    // Create menu grid container
+    hwndMenuGridContainer = CreateWindow(L"STATIC", NULL,
+        WS_VISIBLE | WS_CHILD | SS_NOTIFY,
+        20, 170, 900, 400, hwnd, (HMENU)IDC_MENU_GRID_CONTAINER, NULL, NULL);
+
+    // Create order display section (right panel)
+    CreateWindow(L"STATIC", L"CURRENT ORDER",
+        WS_VISIBLE | WS_CHILD | SS_CENTER,
+        950, 170, 400, 30, hwnd, NULL, NULL, NULL);
+
+    hwndOrderList = CreateWindowEx(WS_EX_CLIENTEDGE, L"LISTBOX", NULL,
+        WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_NOTIFY,
+        950, 210, 400, 200, hwnd, (HMENU)IDC_ORDER_LIST, NULL, NULL);
+
+    // Create numeric keypad
+    CreateNumericKeypad(hwnd);
+
+    // Create payment section
+    CreatePaymentSection(hwnd);
+
+    // Create action buttons
+    CreateWindow(L"BUTTON", L"REMOVE SELECTED",
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+        950, 550, 190, 35, hwnd, (HMENU)IDC_BTN_REMOVE, NULL, NULL);
+
+    CreateWindow(L"BUTTON", L"CLEAR ORDER",
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+        1160, 550, 190, 35, hwnd, (HMENU)IDC_BTN_CLEAR, NULL, NULL);
+
+    // Create checkout button
+    CreateWindow(L"BUTTON", L"CHECKOUT",
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+        950, 600, 400, 40, hwnd, (HMENU)IDC_BTN_CHECKOUT, NULL, NULL);
+
+    // Apply fonts to controls
+    SendMessage(hwndOrderList, WM_SETFONT, (WPARAM)hFontNormal, TRUE);
+
+    // Set current category button color
+    SendMessage(hwndTabAppetizers, WM_SETFONT, (WPARAM)hFontBold, TRUE);
+}
+
+// Create visual menu grid
+void RestaurantGUI::CreateMenuGrid(HWND hwnd) {
+    // Clear existing menu buttons
+    for (HWND btn : menuButtonHandles) {
+        if (btn) DestroyWindow(btn);
+    }
+    menuButtonHandles.clear();
+
+    // Get menu items for current category
+    const MenuItem* menu = core->getMenu();
+    int menuSize = core->getMenuSize();
+
+    vector<MenuItem> categoryItems;
+    for (int i = 0; i < menuSize; i++) {
+        if (menu[i].category == currentCategory) {
+            categoryItems.push_back(menu[i]);
+        }
+    }
+
+    // Calculate grid layout
+    const int buttonWidth = 140;
+    const int buttonHeight = 140;
+    const int spacing = 15;
+    const int columns = 6;
+    const int startX = 20;
+    const int startY = 170;
+
+    // Create menu item buttons
+    for (size_t i = 0; i < categoryItems.size(); i++) {
+        int row = i / columns;
+        int col = i % columns;
+        int x = startX + col * (buttonWidth + spacing);
+        int y = startY + row * (buttonHeight + spacing);
+
+        // Create button for menu item
+        int controlId = IDC_MENU_ITEM_BASE + static_cast<int>(i);
+        HWND menuButton = CreateWindow(L"BUTTON", NULL,
+            WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_MULTILINE,
+            x, y, buttonWidth, buttonHeight,
+            hwnd, (HMENU)controlId, NULL, NULL);
+
+        // Format button text with emoji and price
+        string emoji = GetFoodEmoji(categoryItems[i].name);
+        wostringstream buttonText;
+        buttonText << emoji.c_str() << L"\n"
+                   << wstring(categoryItems[i].name.begin(), categoryItems[i].name.end()).c_str() << L"\n"
+                   << L"₱" << categoryItems[i].price;
+
+        SetWindowText(menuButton, buttonText.str().c_str());
+        SendMessage(menuButton, WM_SETFONT, (WPARAM)hMenuFont, TRUE);
+
+        menuButtonHandles.push_back(menuButton);
+    }
+}
+
+// Create numeric keypad
+void RestaurantGUI::CreateNumericKeypad(HWND hwnd) {
+    // Clear existing keypad buttons
+    for (HWND btn : keypadHandles) {
+        if (btn) DestroyWindow(btn);
+    }
+    keypadHandles.clear();
+
+    const int keySize = 50;
+    const int spacing = 5;
+    const int startX = 950;
+    const int startY = 650;
+
+    // Keypad layout: 3x4 grid
+    const wchar_t* keys[] = {L"7", L"8", L"9", L"4", L"5", L"6", L"1", L"2", L"3", L"C", L"0", L"."};
+    const int keyIds[] = {IDC_KEY_7, IDC_KEY_8, IDC_KEY_9, IDC_KEY_4, IDC_KEY_5, IDC_KEY_6,
+                         IDC_KEY_1, IDC_KEY_2, IDC_KEY_3, IDC_KEY_CLEAR, IDC_KEY_0, IDC_KEY_DECIMAL};
+
+    for (int i = 0; i < 12; i++) {
+        int row = i / 3;
+        int col = i % 3;
+        int x = startX + col * (keySize + spacing);
+        int y = startY + row * (keySize + spacing);
+
+        HWND keyButton = CreateWindow(L"BUTTON", keys[i],
+            WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+            x, y, keySize, keySize,
+            hwnd, (HMENU)keyIds[i], NULL, NULL);
+
+        // Special styling for clear button
+        if (keyIds[i] == IDC_KEY_CLEAR) {
+            SendMessage(keyButton, WM_SETFONT, (WPARAM)hFontBold, TRUE);
+        } else {
+            SendMessage(keyButton, WM_SETFONT, (WPARAM)hFontBold, TRUE);
+        }
+
+        keypadHandles.push_back(keyButton);
+    }
+}
+
+// Create payment section
+void RestaurantGUI::CreatePaymentSection(HWND hwnd) {
+    // Payment amount display
+    CreateWindow(L"STATIC", L"PAYMENT:",
+        WS_VISIBLE | WS_CHILD,
+        950, 430, 100, 25, hwnd, NULL, NULL, NULL);
+
+    hwndPaymentAmount = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"0.00",
+        WS_VISIBLE | WS_CHILD | ES_RIGHT | ES_NUMBER,
+        1050, 430, 120, 25, hwnd, (HMENU)IDC_PAYMENT_AMOUNT, NULL, NULL);
+
+    // Change display
+    CreateWindow(L"STATIC", L"CHANGE:",
+        WS_VISIBLE | WS_CHILD,
+        1180, 430, 100, 25, hwnd, NULL, NULL, NULL);
+
+    hwndChangeAmount = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"0.00",
+        WS_VISIBLE | WS_CHILD | ES_RIGHT | ES_READONLY,
+        1280, 430, 70, 25, hwnd, (HMENU)IDC_CHANGE_AMOUNT, NULL, NULL);
+
+    // Discount combo box
+    CreateWindow(L"STATIC", L"DISCOUNT:",
+        WS_VISIBLE | WS_CHILD,
+        950, 470, 100, 25, hwnd, NULL, NULL, NULL);
+
+    hwndDiscountCombo = CreateWindow(L"COMBOBOX", NULL,
+        WS_VISIBLE | WS_CHILD | CBS_DROPDOWNLIST | WS_VSCROLL,
+        1050, 470, 300, 200, hwnd, (HMENU)IDC_DISCOUNT_COMBO, NULL, NULL);
+
+    // Add discount options
+    SendMessage(hwndDiscountCombo, CB_ADDSTRING, 0, (LPARAM)L"None");
+    SendMessage(hwndDiscountCombo, CB_ADDSTRING, 0, (LPARAM)L"Student (10%)");
+    SendMessage(hwndDiscountCombo, CB_ADDSTRING, 0, (LPARAM)L"Senior (20%)");
+    SendMessage(hwndDiscountCombo, CB_ADDSTRING, 0, (LPARAM)L"PWD (20%)");
+    SendMessage(hwndDiscountCombo, CB_SETCURSEL, 0, 0);
+
+    // Apply fonts
+    SendMessage(hwndPaymentAmount, WM_SETFONT, (WPARAM)hFontNormal, TRUE);
+    SendMessage(hwndChangeAmount, WM_SETFONT, (WPARAM)hFontNormal, TRUE);
+    SendMessage(hwndDiscountCombo, WM_SETFONT, (WPARAM)hFontNormal, TRUE);
+
+    // Subtotal display (modern styling)
+    hwndSubtotalLabel = CreateWindow(L"STATIC", L"Subtotal: ₱0.00",
+        WS_VISIBLE | WS_CHILD | SS_RIGHT,
+        950, 510, 400, 25, hwnd, (HMENU)IDC_STATIC_SUBTOTAL, NULL, NULL);
+    SendMessage(hwndSubtotalLabel, WM_SETFONT, (WPARAM)hFontBold, TRUE);
+}
+
+// Update menu grid based on category
+void RestaurantGUI::UpdateMenuGrid(const string& category) {
+    CreateMenuGrid(hwndMain);
+}
+
+// Get food emoji based on item name
+string RestaurantGUI::GetFoodEmoji(const string& itemName) {
+    if (itemName.find("Lumpiang") != string::npos) return "🥟";
+    if (itemName.find("Calamares") != string::npos) return "🦑";
+    if (itemName.find("Adobo") != string::npos) return "🍲";
+    if (itemName.find("Kare-Kare") != string::npos) return "🥘";
+    if (itemName.find("Sinigang") != string::npos) return "🍜";
+    if (itemName.find("Bangus") != string::npos) return "🐟";
+    if (itemName.find("Bulalo") != string::npos) return "🍖";
+    if (itemName.find("Halo-Halo") != string::npos) return "🍧";
+    if (itemName.find("Leche Flan") != string::npos) return "🍰";
+    if (itemName.find("Buko Juice") != string::npos) return "🥥";
+    if (itemName.find("Iced Tea") != string::npos) return "🥤";
+    if (itemName.find("Coke") != string::npos) return "🥤";
+    return "🍽️";  // Default plate emoji
+}
+
+// Get category color
+COLORREF RestaurantGUI::GetCategoryColor(const string& category) {
+    if (category == "Appetizers") return COLOR_SECONDARY;
+    if (category == "Main Dishes") return COLOR_PRIMARY;
+    if (category == "Desserts") return COLOR_ACCENT;
+    if (category == "Beverages") return COLOR_SUCCESS;
+    return COLOR_PRIMARY;
+}
+
+// Animate button press
+void RestaurantGUI::AnimateButtonPress(HWND button) {
+    // Simple visual feedback - in a real implementation, this would include scaling
+    InvalidateRect(button, NULL, TRUE);
+    UpdateWindow(button);
+}
+
+// Update visual feedback
+void RestaurantGUI::UpdateVisualFeedback() {
+    // Update status bar or other visual elements
+    if (hwndStatusBar) {
+        SetWindowText(hwndStatusBar, L"Ready");
+    }
+}
+
 // Run the application
 int RestaurantGUI::Run() {
     MSG msg;
