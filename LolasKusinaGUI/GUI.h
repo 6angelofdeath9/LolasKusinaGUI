@@ -72,7 +72,7 @@ private:
     string currentCategory;
     int selectedQty;
 
-    // Window handles
+    // Original Window handles
     HWND hwndMain;
     HWND hwndMenuList;
     HWND hwndOrderList;
@@ -80,6 +80,16 @@ private:
     HWND hwndDiscountCombo;
     HWND hwndQtyEdit;
     HWND hwndTabAppetizers, hwndTabMain, hwndTabDesserts, hwndTabBeverages;
+
+    // Modern POS Window handles
+    HWND hwndMenuGridContainer;
+    HWND hwndKeypadContainer;
+    HWND hwndPaymentAmount;
+    HWND hwndChangeAmount;
+    HWND hwndLogoImage;
+    HWND hwndStatusBar;
+    vector<HWND> menuButtonHandles;  // Dynamic menu item buttons
+    vector<HWND> keypadHandles;      // Numeric keypad buttons
 
     // Fonts
     HFONT hFontTitle;
