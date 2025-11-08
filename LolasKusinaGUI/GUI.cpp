@@ -9,7 +9,8 @@ RestaurantGUI::RestaurantGUI(RestaurantCore* restaurantCore)
     hwndSubtotalLabel(nullptr), hwndDiscountCombo(nullptr), hwndQtyEdit(nullptr),
     hwndMenuGridContainer(nullptr), hwndKeypadContainer(nullptr),
     hwndPaymentAmount(nullptr), hwndChangeAmount(nullptr), hwndLogoImage(nullptr),
-    hwndStatusBar(nullptr), hFontTitle(nullptr), hFontNormal(nullptr), hFontBold(nullptr) {
+    hwndStatusBar(nullptr), hFontTitle(nullptr), hFontNormal(nullptr), hFontBold(nullptr),
+    hMenuFont(nullptr), hPriceFont(nullptr), hEmojiFont(nullptr) {
 }
 
 // Destructor
