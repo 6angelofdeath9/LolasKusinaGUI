@@ -54,6 +54,17 @@ using namespace std;
 #define IDC_LOGO_IMAGE          5000
 #define IDC_STATUS_BAR          5001
 
+// Login screen controls
+#define IDC_LOGIN_USERNAME      6000
+#define IDC_LOGIN_PASSWORD      6001
+#define IDC_LOGIN_BUTTON        6002
+#define IDC_LOGIN_TITLE         6003
+
+// Quantity controls for menu items
+#define IDC_QTY_MINUS_BASE      7000
+#define IDC_QTY_PLUS_BASE       7100
+#define IDC_QTY_DISPLAY_BASE    7200
+
 // Color definitions for Lola's Kusina theme
 #define COLOR_PRIMARY         RGB(139, 69, 19)    // Saddle Brown
 #define COLOR_SECONDARY       RGB(210, 105, 30)   // Chocolate
