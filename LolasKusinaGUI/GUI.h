@@ -95,6 +95,9 @@ private:
     HFONT hFontTitle;
     HFONT hFontNormal;
     HFONT hFontBold;
+    HFONT hMenuFont;      // For menu item names
+    HFONT hPriceFont;     // For price displays
+    HFONT hEmojiFont;     // For emoji display
 
 public:
     RestaurantGUI(RestaurantCore* restaurantCore);
