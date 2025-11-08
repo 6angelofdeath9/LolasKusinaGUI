@@ -108,6 +108,18 @@ private:
     vector<HWND> menuButtonHandles;  // Dynamic menu item buttons
     vector<HWND> keypadHandles;      // Numeric keypad buttons
 
+    // Login screen handles
+    HWND hwndLoginUsername;
+    HWND hwndLoginPassword;
+    HWND hwndLoginButton;
+    HWND hwndLoginPanel;
+
+    // Quantity controls
+    vector<HWND> qtyMinusHandles;    // Quantity minus buttons
+    vector<HWND> qtyPlusHandles;     // Quantity plus buttons
+    vector<HWND> qtyDisplayHandles;  // Quantity display labels
+    vector<int> menuQuantities;      // Store quantity for each menu item
+
     // Fonts
     HFONT hFontTitle;
     HFONT hFontNormal;
