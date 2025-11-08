@@ -295,10 +295,20 @@ void RestaurantGUI::OnCommand(WPARAM wParam, LPARAM lParam) {
         wchar_t digit = L'0' + (wmId - IDC_KEY_0);
         wchar_t currentText[50];
         GetWindowText(hwndPaymentAmount, currentText, 50);
-        wcscat_s(currentText, L"0");
-        currentText[wcslen(currentText) - 1] = digit;
-        currentText[wcslen(currentText)] = L'\0';
+
+        // If current text is "0.00", replace it with the digit
+        if (wcscmp(currentText, L"0.00") == 0) {
+            swprintf(currentText, 50, L"%c", digit);
+        } else {
+            // Append the digit
+            size_t len = wcslen(currentText);
+            if (len < 49) {
+                currentText[len] = digit;
+                currentText[len + 1] = L'\0';
+            }
+        }
         SetWindowText(hwndPaymentAmount, currentText);
+        UpdateSubtotalDisplay();
         AnimateButtonPress((HWND)lParam);
     }
     break;
