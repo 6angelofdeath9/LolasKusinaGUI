@@ -119,6 +119,17 @@ private:
     void OnCheckout();
     void OnQuantityChange(int change);
 
+    // Modern POS Layout Methods
+    void CreateModernLayout(HWND hwnd);
+    void CreateMenuGrid(HWND hwnd);
+    void CreateNumericKeypad(HWND hwnd);
+    void CreatePaymentSection(HWND hwnd);
+    void UpdateMenuGrid(const string& category);
+    void AnimateButtonPress(HWND button);
+    void UpdateVisualFeedback();
+    string GetFoodEmoji(const string& itemName);
+    COLORREF GetCategoryColor(const string& category);
+
     // Window procedure
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
