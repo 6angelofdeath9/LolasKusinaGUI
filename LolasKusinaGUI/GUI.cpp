@@ -359,19 +359,36 @@ void RestaurantGUI::OnPaint(HWND hwnd) {
     PAINTSTRUCT ps;
     HDC hdc = BeginPaint(hwnd, &ps);
 
-    // Draw title background
-    RECT titleRect = { 0, 0, 1000, 70 };
-    HBRUSH hBrushTitle = CreateSolidBrush(RGB(139, 69, 19)); // Saddle brown
+    // Draw modern header with gradient effect
+    RECT titleRect = { 0, 0, 1400, 100 };
+
+    // Create gradient background
+    HBRUSH hBrushTitle = CreateSolidBrush(COLOR_PRIMARY); // Saddle brown
     FillRect(hdc, &titleRect, hBrushTitle);
     DeleteObject(hBrushTitle);
 
-    // Draw title text
+    // Draw decorative border
+    RECT borderRect = { 5, 5, 1395, 95 };
+    HPEN hPenBorder = CreatePen(PS_SOLID, 2, COLOR_ACCENT); // Gold border
+    SelectObject(hdc, hPenBorder);
+    Rectangle(hdc, borderRect.left, borderRect.top, borderRect.right, borderRect.bottom);
+    DeleteObject(hPenBorder);
+
+    // Draw title text with emoji
     SetBkMode(hdc, TRANSPARENT);
-    SetTextColor(hdc, RGB(255, 215, 0)); // Gold
+    SetTextColor(hdc, COLOR_ACCENT); // Gold
     SelectObject(hdc, hFontTitle);
 
-    RECT textRect = { 0, 10, 1000, 60 };
-    DrawText(hdc, L"LOLA'S KUSINA - MGA LUTO NI LOLA", -1, &textRect,
+    RECT textRect = { 0, 25, 1400, 75 };
+    DrawText(hdc, L"🌺 LOLA'S KUSINA - MGA LUTO NI LOLA 🌺", -1, &textRect,
+        DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+    // Draw category indicator
+    SetTextColor(hdc, COLOR_BACKGROUND);
+    SelectObject(hdc, hFontNormal);
+    RECT categoryRect = { 0, 70, 1400, 90 };
+    wstring categoryText = L"Current Category: " + wstring(currentCategory.begin(), currentCategory.end());
+    DrawText(hdc, categoryText.c_str(), -1, &categoryRect,
         DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
     EndPaint(hwnd, &ps);
