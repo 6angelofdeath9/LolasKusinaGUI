@@ -236,6 +236,17 @@ LRESULT CALLBACK RestaurantGUI::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, 
 void RestaurantGUI::OnCommand(WPARAM wParam, LPARAM lParam) {
     int wmId = LOWORD(wParam);
 
+    // Handle login screen commands first
+    if (!isLoggedIn) {
+        switch (wmId) {
+        case IDC_LOGIN_BUTTON:
+            OnLoginAttempt();
+            return;
+        }
+        return; // Don't process other commands until logged in
+    }
+
+    // POS commands (only when logged in)
     switch (wmId) {
     case IDC_TAB_APPETIZERS:
         SwitchCategory("Appetizers");
