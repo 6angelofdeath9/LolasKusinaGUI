@@ -76,6 +76,11 @@ using namespace std;
 #define COLOR_SUCCESS        RGB(40, 167, 69)    // Green
 #define COLOR_DANGER         RGB(220, 53, 69)    // Red
 #define COLOR_WARNING        RGB(255, 193, 7)    // Yellow
+#define COLOR_GRADIENT_START RGB(255, 140, 90)  // Light Salmon
+#define COLOR_GRADIENT_END   RGB(255, 69, 0)    // Red-Orange
+#define COLOR_LOGIN_BG       RGB(46, 47, 66)     // Dark Blue Gray
+#define COLOR_CARD_BG        RGB(255, 255, 255)  // White
+#define COLOR_BORDER_LIGHT   RGB(200, 200, 200)  // Light Gray
 
 class RestaurantGUI {
 private:
