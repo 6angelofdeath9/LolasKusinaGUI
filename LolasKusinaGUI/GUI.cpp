@@ -561,51 +561,34 @@ void RestaurantGUI::OnCheckout() {
     double discount = core->calculateDiscount(subtotal, discountIndex);
     double grandTotal = subtotal - discount;
 
-    // Simple payment input
-    wchar_t paymentAmount[50];
-    swprintf(paymentAmount, 50, L"%.2f", grandTotal);
+    // Get payment amount from modern payment field
+    wchar_t paymentText[50];
+    GetWindowText(hwndPaymentAmount, paymentText, 50);
+    double payment = _wtof(paymentText);
 
-    if (DialogBoxParam(GetModuleHandle(NULL), NULL, hwndMain, [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) -> INT_PTR {
-        if (msg == WM_INITDIALOG) {
-            wchar_t* defaultAmount = (wchar_t*)lParam;
-            SetDlgItemText(hwnd, 1001, defaultAmount);
-            return TRUE;
-        }
-        if (msg == WM_COMMAND) {
-            if (LOWORD(wParam) == IDOK) {
-                EndDialog(hwnd, 1);
-                return TRUE;
-            }
-            if (LOWORD(wParam) == IDCANCEL) {
-                EndDialog(hwnd, 0);
-                return TRUE;
-            }
-        }
-        return FALSE;
-        }, (LPARAM)paymentAmount)) {
-
-        double payment = _wtof(paymentAmount);
-
-        if (payment < grandTotal) {
-            MessageBox(hwndMain, L"Insufficient payment! Transaction cancelled.",
-                L"Payment Error", MB_OK | MB_ICONERROR);
-            return;
-        }
-
-        double change = payment - grandTotal;
-
-        // Generate and show receipt
-        string receipt = core->generateReceipt(subtotal, discount, payment, change);
-        MessageBox(hwndMain, wstring(receipt.begin(), receipt.end()).c_str(),
-            L"Lola's Kusina - Receipt", MB_OK | MB_ICONINFORMATION);
-
-        // Clear order after successful checkout
-        core->clearOrder();
-        UpdateOrderDisplay();
-
-        // Reset quantity
-        SetWindowText(hwndQtyEdit, L"1");
+    if (payment < grandTotal) {
+        MessageBox(hwndMain, L"Insufficient payment! Please enter a valid payment amount.",
+            L"Payment Error", MB_OK | MB_ICONERROR);
+        return;
     }
+
+    double change = payment - grandTotal;
+
+    // Generate and show receipt
+    string receipt = core->generateReceipt(subtotal, discount, payment, change);
+    MessageBox(hwndMain, wstring(receipt.begin(), receipt.end()).c_str(),
+        L"🧾 Lola's Kusina - Receipt", MB_OK | MB_ICONINFORMATION);
+
+    // Clear order after successful checkout
+    core->clearOrder();
+    UpdateOrderDisplay();
+
+    // Reset payment fields
+    SetWindowText(hwndPaymentAmount, L"0.00");
+    SetWindowText(hwndChangeAmount, L"0.00");
+
+    // Show success feedback
+    UpdateVisualFeedback();
 }
 
 // Create modern layout for POS interface
