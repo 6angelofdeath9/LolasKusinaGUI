@@ -51,13 +51,13 @@ bool RestaurantGUI::CreateMainWindow(HINSTANCE hInstance) {
         return false;
     }
 
-    // Create main window with modern dimensions (1400x800px)
+    // Create main window with mobile dimensions (1080x1920px - portrait mode)
     hwndMain = CreateWindowEx(
         0,
         L"LolasKusinaWindowClass",
         L"🌺 LOLA'S KUSINA - MGA LUTO NI LOLA 🌺",
         WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, 1400, 800,
+        CW_USEDEFAULT, CW_USEDEFAULT, 1080, 1920,
         NULL, NULL, hInstance, this
     );
 
