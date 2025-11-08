@@ -453,11 +453,31 @@ void RestaurantGUI::UpdateSubtotalDisplay() {
     double discount = core->calculateDiscount(subtotal, discountIndex);
     double grandTotal = subtotal - discount;
 
-    wstring subtotalText = L"Subtotal: PHP " + to_wstring(subtotal) +
-        L"  |  Discount: PHP " + to_wstring(discount) +
-        L"  |  Total: PHP " + to_wstring(grandTotal);
+    // Format with proper currency display and 2 decimal places
+    wostringstream subtotalStream;
+    subtotalStream << fixed << setprecision(2);
+    subtotalStream << L"Subtotal: ₱" << subtotal
+                   << L"  |  Discount: ₱" << discount
+                   << L"  |  Total: ₱" << grandTotal;
 
-    SetWindowText(hwndSubtotalLabel, subtotalText.c_str());
+    SetWindowText(hwndSubtotalLabel, subtotalStream.str().c_str());
+
+    // Calculate change if payment amount is entered
+    if (hwndPaymentAmount) {
+        wchar_t paymentText[50];
+        GetWindowText(hwndPaymentAmount, paymentText, 50);
+        double payment = _wtof(paymentText);
+
+        if (payment > 0) {
+            double change = payment - grandTotal;
+            wostringstream changeStream;
+            changeStream << fixed << setprecision(2);
+            changeStream << change;
+            SetWindowText(hwndChangeAmount, changeStream.str().c_str());
+        } else {
+            SetWindowText(hwndChangeAmount, L"0.00");
+        }
+    }
 }
 
 // Switch category
