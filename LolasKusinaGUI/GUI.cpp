@@ -7,7 +7,9 @@ RestaurantGUI::RestaurantGUI(RestaurantCore* restaurantCore)
     : core(restaurantCore), currentCategory("Appetizers"), selectedQty(1),
     hwndMain(nullptr), hwndMenuList(nullptr), hwndOrderList(nullptr),
     hwndSubtotalLabel(nullptr), hwndDiscountCombo(nullptr), hwndQtyEdit(nullptr),
-    hFontTitle(nullptr), hFontNormal(nullptr), hFontBold(nullptr) {
+    hwndMenuGridContainer(nullptr), hwndKeypadContainer(nullptr),
+    hwndPaymentAmount(nullptr), hwndChangeAmount(nullptr), hwndLogoImage(nullptr),
+    hwndStatusBar(nullptr), hFontTitle(nullptr), hFontNormal(nullptr), hFontBold(nullptr) {
 }
 
 // Destructor
