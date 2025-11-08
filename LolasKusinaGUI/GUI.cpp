@@ -63,7 +63,7 @@ bool RestaurantGUI::CreateMainWindow(HINSTANCE hInstance) {
         DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
         CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Segoe UI");
 
-    CreateControls(hwndMain);
+    CreateModernLayout(hwndMain);
     UpdateMenuDisplay();
     UpdateOrderDisplay();
 
