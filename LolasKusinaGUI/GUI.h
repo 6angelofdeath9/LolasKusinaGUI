@@ -162,6 +162,21 @@ private:
     string GetFoodEmoji(const string& itemName);
     COLORREF GetCategoryColor(const string& category);
 
+    // Login Screen Methods
+    void CreateLoginScreen(HWND hwnd);
+    void ShowLoginScreen();
+    void HideLoginScreen();
+    bool ValidateLogin(const wstring& username, const wstring& password);
+    void OnLoginAttempt();
+    void DrawLoginBackground(HDC hdc, const RECT& rect);
+
+    // Enhanced Menu Methods
+    void CreateEnhancedMenuGrid(HWND hwnd);
+    void UpdateMenuQuantity(int itemIndex, int change);
+    void OnQuantityButtonPress(int itemIndex, bool isIncrease);
+    void DrawSeparatorLine(HDC hdc, int x1, int y1, int x2, int y2, COLORREF color, int thickness);
+    void DrawRoundedRect(HDC hdc, const RECT& rect, COLORREF fillColor, COLORREF borderColor, int radius);
+
     // Window procedure
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
