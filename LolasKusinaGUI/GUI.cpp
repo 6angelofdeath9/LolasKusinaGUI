@@ -247,15 +247,79 @@ void RestaurantGUI::OnCommand(WPARAM wParam, LPARAM lParam) {
     case IDC_TAB_BEVERAGES:
         SwitchCategory("Beverages");
         break;
-    case IDC_BTN_ADD:
+
+    // Modern menu item buttons (dynamic IDs)
+    case IDC_MENU_ITEM_BASE:
+    case IDC_MENU_ITEM_BASE + 1:
+    case IDC_MENU_ITEM_BASE + 2:
+    case IDC_MENU_ITEM_BASE + 3:
+    case IDC_MENU_ITEM_BASE + 4:
+    case IDC_MENU_ITEM_BASE + 5:
+    case IDC_MENU_ITEM_BASE + 6:
+    case IDC_MENU_ITEM_BASE + 7:
+    case IDC_MENU_ITEM_BASE + 8:
+    case IDC_MENU_ITEM_BASE + 9:
+    case IDC_MENU_ITEM_BASE + 10:
+    case IDC_MENU_ITEM_BASE + 11:
     {
-        int selected = (int)SendMessage(hwndMenuList, LB_GETCURSEL, 0, 0);
-        if (selected != LB_ERR) {
-            int itemId = (int)SendMessage(hwndMenuList, LB_GETITEMDATA, selected, 0);
-            OnAddToOrder(itemId);
+        int buttonIndex = wmId - IDC_MENU_ITEM_BASE;
+        const MenuItem* menu = core->getMenu();
+        int menuSize = core->getMenuSize();
+
+        int currentIndex = 0;
+        for (int i = 0; i < menuSize; i++) {
+            if (menu[i].category == currentCategory) {
+                if (currentIndex == buttonIndex) {
+                    OnAddToOrder(menu[i].number);
+                    AnimateButtonPress((HWND)lParam);
+                    break;
+                }
+                currentIndex++;
+            }
         }
     }
     break;
+
+    // Numeric keypad buttons
+    case IDC_KEY_0:
+    case IDC_KEY_1:
+    case IDC_KEY_2:
+    case IDC_KEY_3:
+    case IDC_KEY_4:
+    case IDC_KEY_5:
+    case IDC_KEY_6:
+    case IDC_KEY_7:
+    case IDC_KEY_8:
+    case IDC_KEY_9:
+    {
+        wchar_t digit = L'0' + (wmId - IDC_KEY_0);
+        wchar_t currentText[50];
+        GetWindowText(hwndPaymentAmount, currentText, 50);
+        wcscat_s(currentText, L"0");
+        currentText[wcslen(currentText) - 1] = digit;
+        currentText[wcslen(currentText)] = L'\0';
+        SetWindowText(hwndPaymentAmount, currentText);
+        AnimateButtonPress((HWND)lParam);
+    }
+    break;
+
+    case IDC_KEY_DECIMAL:
+    {
+        wchar_t currentText[50];
+        GetWindowText(hwndPaymentAmount, currentText, 50);
+        if (wcsstr(currentText, L".") == nullptr) {
+            wcscat_s(currentText, L".");
+            SetWindowText(hwndPaymentAmount, currentText);
+        }
+        AnimateButtonPress((HWND)lParam);
+    }
+    break;
+
+    case IDC_KEY_CLEAR:
+        SetWindowText(hwndPaymentAmount, L"0.00");
+        AnimateButtonPress((HWND)lParam);
+        break;
+
     case IDC_BTN_REMOVE:
         OnRemoveFromOrder();
         break;
@@ -276,6 +340,17 @@ void RestaurantGUI::OnCommand(WPARAM wParam, LPARAM lParam) {
             UpdateSubtotalDisplay();
         }
         break;
+
+    // Legacy menu list support
+    case IDC_BTN_ADD:
+    {
+        int selected = (int)SendMessage(hwndMenuList, LB_GETCURSEL, 0, 0);
+        if (selected != LB_ERR) {
+            int itemId = (int)SendMessage(hwndMenuList, LB_GETITEMDATA, selected, 0);
+            OnAddToOrder(itemId);
+        }
+    }
+    break;
     }
 }
 
