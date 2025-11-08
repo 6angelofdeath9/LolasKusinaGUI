@@ -1,6 +1,7 @@
 #include "GUI.h"
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
 
 // Constructor
 RestaurantGUI::RestaurantGUI(RestaurantCore* restaurantCore)
