@@ -18,6 +18,17 @@ RestaurantGUI::~RestaurantGUI() {
     if (hFontTitle) DeleteObject(hFontTitle);
     if (hFontNormal) DeleteObject(hFontNormal);
     if (hFontBold) DeleteObject(hFontBold);
+    if (hMenuFont) DeleteObject(hMenuFont);
+    if (hPriceFont) DeleteObject(hPriceFont);
+    if (hEmojiFont) DeleteObject(hEmojiFont);
+
+    // Clean up dynamic controls
+    for (HWND hwnd : menuButtonHandles) {
+        if (hwnd) DestroyWindow(hwnd);
+    }
+    for (HWND hwnd : keypadHandles) {
+        if (hwnd) DestroyWindow(hwnd);
+    }
 }
 
 // Create main application window
