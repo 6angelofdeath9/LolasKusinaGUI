@@ -396,29 +396,31 @@ void RestaurantGUI::OnPaint(HWND hwnd) {
 
 // Update menu display based on current category
 void RestaurantGUI::UpdateMenuDisplay() {
-    // Clear the menu list
-    SendMessage(hwndMenuList, LB_RESETCONTENT, 0, 0);
+    // Update modern menu grid
+    CreateMenuGrid(hwndMain);
 
-    // Get menu items for current category
-    const MenuItem* menu = core->getMenu();
-    int menuSize = core->getMenuSize();
+    // Also update legacy menu list for compatibility
+    if (hwndMenuList) {
+        SendMessage(hwndMenuList, LB_RESETCONTENT, 0, 0);
 
-    for (int i = 0; i < menuSize; i++) {
-        if (menu[i].category == currentCategory) {
-            // Format: "1. Lumpiang Shanghai - PHP 120.00"
-            wstring menuItem = to_wstring(menu[i].number) + L". " +
-                wstring(menu[i].name.begin(), menu[i].name.end()) +
-                L" - PHP " + to_wstring(menu[i].price);
+        const MenuItem* menu = core->getMenu();
+        int menuSize = core->getMenuSize();
 
-            int index = (int)SendMessage(hwndMenuList, LB_ADDSTRING, 0,
-                (LPARAM)menuItem.c_str());
-            SendMessage(hwndMenuList, LB_SETITEMDATA, index, (LPARAM)menu[i].number);
+        for (int i = 0; i < menuSize; i++) {
+            if (menu[i].category == currentCategory) {
+                wstring menuItem = to_wstring(menu[i].number) + L". " +
+                    wstring(menu[i].name.begin(), menu[i].name.end()) +
+                    L" - ₱" + to_wstring(menu[i].price);
+
+                int index = (int)SendMessage(hwndMenuList, LB_ADDSTRING, 0,
+                    (LPARAM)menuItem.c_str());
+                SendMessage(hwndMenuList, LB_SETITEMDATA, index, (LPARAM)menu[i].number);
+            }
         }
-    }
 
-    // Select first item by default
-    if (SendMessage(hwndMenuList, LB_GETCOUNT, 0, 0) > 0) {
-        SendMessage(hwndMenuList, LB_SETCURSEL, 0, 0);
+        if (SendMessage(hwndMenuList, LB_GETCOUNT, 0, 0) > 0) {
+            SendMessage(hwndMenuList, LB_SETCURSEL, 0, 0);
+        }
     }
 }
 
