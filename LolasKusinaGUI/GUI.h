@@ -87,6 +87,7 @@ private:
     RestaurantCore* core;
     string currentCategory;
     int selectedQty;
+    bool isLoggedIn;
 
     // Original Window handles
     HWND hwndMain;
