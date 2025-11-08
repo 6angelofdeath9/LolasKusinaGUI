@@ -28,7 +28,7 @@ bool RestaurantGUI::CreateMainWindow(HINSTANCE hInstance) {
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground = CreateSolidBrush(RGB(255, 248, 240));
+    wc.hbrBackground = CreateSolidBrush(COLOR_BACKGROUND);
     wc.lpszClassName = L"LolasKusinaWindowClass";
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 
