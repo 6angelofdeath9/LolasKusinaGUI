@@ -5,12 +5,14 @@
 
 // Constructor
 RestaurantGUI::RestaurantGUI(RestaurantCore* restaurantCore)
-    : core(restaurantCore), currentCategory("Appetizers"), selectedQty(1),
+    : core(restaurantCore), currentCategory("Appetizers"), selectedQty(1), isLoggedIn(false),
     hwndMain(nullptr), hwndMenuList(nullptr), hwndOrderList(nullptr),
     hwndSubtotalLabel(nullptr), hwndDiscountCombo(nullptr), hwndQtyEdit(nullptr),
     hwndMenuGridContainer(nullptr), hwndKeypadContainer(nullptr),
     hwndPaymentAmount(nullptr), hwndChangeAmount(nullptr), hwndLogoImage(nullptr),
-    hwndStatusBar(nullptr), hFontTitle(nullptr), hFontNormal(nullptr), hFontBold(nullptr),
+    hwndStatusBar(nullptr), hwndLoginUsername(nullptr), hwndLoginPassword(nullptr),
+    hwndLoginButton(nullptr), hwndLoginPanel(nullptr),
+    hFontTitle(nullptr), hFontNormal(nullptr), hFontBold(nullptr),
     hMenuFont(nullptr), hPriceFont(nullptr), hEmojiFont(nullptr) {
 }
 
